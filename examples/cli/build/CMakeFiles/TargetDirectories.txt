@@ -1,0 +1,4 @@
+/Users/spacegaori/dev/hello/examples/cli/build/CMakeFiles/cli.dir
+/Users/spacegaori/dev/hello/examples/cli/build/CMakeFiles/run.dir
+/Users/spacegaori/dev/hello/examples/cli/build/CMakeFiles/edit_cache.dir
+/Users/spacegaori/dev/hello/examples/cli/build/CMakeFiles/rebuild_cache.dir
