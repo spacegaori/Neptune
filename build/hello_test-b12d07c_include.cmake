@@ -1,5 +1,0 @@
-if(EXISTS "/Users/spacegaori/dev/hello/build/hello_test-b12d07c_tests.cmake")
-  include("/Users/spacegaori/dev/hello/build/hello_test-b12d07c_tests.cmake")
-else()
-  add_test(hello_test_NOT_BUILT-b12d07c hello_test_NOT_BUILT-b12d07c)
-endif()

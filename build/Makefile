@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.27.7/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/spacegaori/dev/hello
+CMAKE_SOURCE_DIR = /Users/spacegaori/dev/neptune
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/spacegaori/dev/hello/build
+CMAKE_BINARY_DIR = /Users/spacegaori/dev/neptune/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -142,9 +142,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/spacegaori/dev/hello/build/CMakeFiles /Users/spacegaori/dev/hello/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/spacegaori/dev/neptune/build/CMakeFiles /Users/spacegaori/dev/neptune/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/spacegaori/dev/hello/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/spacegaori/dev/neptune/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -172,17 +172,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named hello_test
+# Target rules for targets named matrix_test
 
 # Build rule for target.
-hello_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello_test
-.PHONY : hello_test
+matrix_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 matrix_test
+.PHONY : matrix_test
 
 # fast build rule for target.
-hello_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_test.dir/build.make CMakeFiles/hello_test.dir/build
-.PHONY : hello_test/fast
+matrix_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrix_test.dir/build.make CMakeFiles/matrix_test.dir/build
+.PHONY : matrix_test/fast
 
 #=============================================================================
 # Target rules for targets named gmock
@@ -241,7 +241,7 @@ test/test.o: test/test.cpp.o
 
 # target to build an object file
 test/test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_test.dir/build.make CMakeFiles/hello_test.dir/test/test.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrix_test.dir/build.make CMakeFiles/matrix_test.dir/test/test.cpp.o
 .PHONY : test/test.cpp.o
 
 test/test.i: test/test.cpp.i
@@ -249,7 +249,7 @@ test/test.i: test/test.cpp.i
 
 # target to preprocess a source file
 test/test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_test.dir/build.make CMakeFiles/hello_test.dir/test/test.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrix_test.dir/build.make CMakeFiles/matrix_test.dir/test/test.cpp.i
 .PHONY : test/test.cpp.i
 
 test/test.s: test/test.cpp.s
@@ -257,7 +257,7 @@ test/test.s: test/test.cpp.s
 
 # target to generate assembly for a file
 test/test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_test.dir/build.make CMakeFiles/hello_test.dir/test/test.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrix_test.dir/build.make CMakeFiles/matrix_test.dir/test/test.cpp.s
 .PHONY : test/test.cpp.s
 
 # Help Target
@@ -277,7 +277,7 @@ help:
 	@echo "... gmock_main"
 	@echo "... gtest"
 	@echo "... gtest_main"
-	@echo "... hello_test"
+	@echo "... matrix_test"
 	@echo "... test/test.o"
 	@echo "... test/test.i"
 	@echo "... test/test.s"

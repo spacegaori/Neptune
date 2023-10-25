@@ -1,4 +1,4 @@
-# Install script for directory: /Users/spacegaori/dev/hello
+# Install script for directory: /Users/spacegaori/dev/neptune
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,19 +39,19 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/Users/spacegaori/dev/hello/build/_deps/googletest-build/cmake_install.cmake")
+  include("/Users/spacegaori/dev/neptune/build/_deps/googletest-build/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/hello/cmake/helloTargets.cmake")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/neptune/cmake/neptuneTargets.cmake")
     file(DIFFERENT _cmake_export_file_changed FILES
-         "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/hello/cmake/helloTargets.cmake"
-         "/Users/spacegaori/dev/hello/build/CMakeFiles/Export/1894ad48544c0f643d39e29f92c2ffb3/helloTargets.cmake")
+         "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/neptune/cmake/neptuneTargets.cmake"
+         "/Users/spacegaori/dev/neptune/build/CMakeFiles/Export/0ed2142bb316269c31ec48a3d502ad04/neptuneTargets.cmake")
     if(_cmake_export_file_changed)
-      file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/hello/cmake/helloTargets-*.cmake")
+      file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/neptune/cmake/neptuneTargets-*.cmake")
       if(_cmake_old_config_files)
         string(REPLACE ";" ", " _cmake_old_config_files_text "${_cmake_old_config_files}")
-        message(STATUS "Old export file \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/hello/cmake/helloTargets.cmake\" will be replaced.  Removing files [${_cmake_old_config_files_text}].")
+        message(STATUS "Old export file \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/neptune/cmake/neptuneTargets.cmake\" will be replaced.  Removing files [${_cmake_old_config_files_text}].")
         unset(_cmake_old_config_files_text)
         file(REMOVE ${_cmake_old_config_files})
       endif()
@@ -59,18 +59,18 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
     endif()
     unset(_cmake_export_file_changed)
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hello/cmake" TYPE FILE FILES "/Users/spacegaori/dev/hello/build/CMakeFiles/Export/1894ad48544c0f643d39e29f92c2ffb3/helloTargets.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/neptune/cmake" TYPE FILE FILES "/Users/spacegaori/dev/neptune/build/CMakeFiles/Export/0ed2142bb316269c31ec48a3d502ad04/neptuneTargets.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hello/cmake" TYPE FILE FILES
-    "/Users/spacegaori/dev/hello/build/helloConfig.cmake"
-    "/Users/spacegaori/dev/hello/build/helloConfigVersion.cmake"
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/neptune/cmake" TYPE FILE FILES
+    "/Users/spacegaori/dev/neptune/build/neptuneConfig.cmake"
+    "/Users/spacegaori/dev/neptune/build/neptuneConfigVersion.cmake"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/hello" TYPE DIRECTORY FILES "/Users/spacegaori/dev/hello/include/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/neptune" TYPE DIRECTORY FILES "/Users/spacegaori/dev/neptune/include/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -81,5 +81,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/spacegaori/dev/hello/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/spacegaori/dev/neptune/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
