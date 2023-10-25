@@ -1,8 +1,6 @@
-# CMakeLists.txt - Part 1
-# Build
 cmake_minimum_required(VERSION 3.14)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
@@ -12,8 +10,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-
-project(hello VERSION 1.0.0 LANGUAGES CXX)
+project(neptune VERSION 1.0.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 add_library(${PROJECT_NAME} INTERFACE)
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
@@ -27,19 +24,19 @@ target_include_directories(
 enable_testing()
 
 add_executable(
-  hello_test
+  matrix_test
   test/test.cpp
 )
 target_link_libraries(
-  hello_test
+  matrix_test
   PRIVATE
   GTest::gtest_main
 )
 
-target_include_directories(hello_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(matrix_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(matrix_test)
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
@@ -51,7 +48,7 @@ write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
                                  VERSION ${PROJECT_VERSION}
                                  COMPATIBILITY SameMajorVersion)
 if(NOT INCLUDE_INSTALL_DIR)
-  set(INCLUDE_INSTALL_DIR include/hello)
+  set(INCLUDE_INSTALL_DIR include/matrix)
 endif()
 configure_package_config_file(
   "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
