@@ -42,16 +42,30 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
     {
         assert(0 < std::size(matrix.elements_));
-        out << "[\n";
-        for (Index i{ 0 }; i < matrix.rows_; ++i) {
-            for (Index j{ 0 }; j < matrix.cols_; ++j) {
-                out << "  " << matrix.elements_.at(i*matrix.cols_+j) << "  ";
-            }
-            out << '\n' << '\n';
-        }
-        out << "]\n";
 
+                Index rows{ matrix.rows_ };
+                Index cols{ matrix.cols_ };
+
+                out << '[';
+                for(Index i{ 0 }; i < rows; ++i)
+                {
+                    if (i != 0)
+                        out << ' ';
+                    out << '[';
+
+                    for(Index j{ 0 }; j < cols; ++j)
+                    {
+                        out << matrix.elements_.at(i*cols+j);
+                        if (j != (cols - 1))
+                            out << ' ';
+                    }
+                    out << ']';
+                    if (i != (rows - 1))
+                        out << '\n';
+                }
+                out << ']';
         return out;
+
     }
 
     bool operator! () const {
@@ -70,7 +84,7 @@ public:
 
     friend Matrix operator+(const Matrix& m, float value) {
         Vector v = m.elements_;
-        std::transform(v.cbegin(), v.cend(),v.begin(), [value](float f){return f + value;});
+        std::transform(v.cbegin(), v.cend(), v.begin(), [value](float f){ return f + value; });
 
         return Matrix{ m.rows_, m.cols_, v };
     }
@@ -127,11 +141,6 @@ public:
             }
         }
         return dst;
-    }
-
-    void fill(float f)
-    {
-        elements_ = Vector(rows_*cols_, f);
     }
 
     Matrix col(Index c)
