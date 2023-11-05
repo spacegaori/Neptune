@@ -3,12 +3,14 @@
 #define MATRIX_HPP
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <concepts>
 #include <cstddef>
 #include <format>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <random>
@@ -22,15 +24,23 @@ using Vector = std::vector<float>;
 using Index = Vector::size_type;
 class Matrix {
 private:
-    Index rows_ {};
-    Index cols_ {};
-    Vector elements_ {};
+    Index rows_{};
+    Index cols_{};
+    Vector elements_{};
     
 public:
     Matrix(Index rows = 0, Index cols = 0, float f = 0.0f) : rows_{ rows }, cols_{ cols }, elements_{ Vector(rows*cols, f) } {}
     Matrix(Index rows, Index cols, Vector elements) : rows_{ rows }, cols_{ cols }, elements_{ elements }
     {
         assert(rows*cols == std::size(elements));
+    }
+
+    float& operator() (Index row, Index col)
+    {
+        assert(row*cols_ + col < rows_*cols_);
+        assert(row >= 0);
+        assert(col >= 0);
+        return elements_.at(row*cols_ + col);
     }
 
     float& operator[] (Index index)
@@ -42,28 +52,30 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
     {
         assert(0 < std::size(matrix.elements_));
+        out << std::fixed;
+        out << std::setprecision(4);
 
-                Index rows{ matrix.rows_ };
-                Index cols{ matrix.cols_ };
+        Index rows{ matrix.rows_ };
+        Index cols{ matrix.cols_ };
 
-                out << '[';
-                for(Index i{ 0 }; i < rows; ++i)
-                {
-                    if (i != 0)
-                        out << ' ';
-                    out << '[';
+        out << '[';
+        for(Index i{ 0 }; i < rows; ++i)
+        {
+            if (i != 0)
+                out << ' ';
+            out << '[';
 
-                    for(Index j{ 0 }; j < cols; ++j)
-                    {
-                        out << matrix.elements_.at(i*cols+j);
-                        if (j != (cols - 1))
-                            out << ' ';
-                    }
-                    out << ']';
-                    if (i != (rows - 1))
-                        out << '\n';
-                }
-                out << ']';
+            for(Index j{ 0 }; j < cols; ++j)
+            {
+                out << matrix.elements_.at(i*cols+j);
+                if (j != (cols - 1))
+                    out << ' ';
+            }
+            out << ']';
+            if (i != (rows - 1))
+                out << '\n';
+        }
+        out << ']';
         return out;
 
     }
@@ -182,6 +194,12 @@ public:
         dst.alloc(slice);
 
         return dst;
+    }
+
+    void setDimension(Index rows, Index cols)
+    {
+        rows_ = rows;
+        cols_ = cols;
     }
 
     void sigmoid()
