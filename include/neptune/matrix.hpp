@@ -1,21 +1,14 @@
 // include/neptune/matrix.hpp
+
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include <algorithm>
-#include <array>
 #include <cassert>
 #include <cmath>
-#include <concepts>
 #include <cstddef>
-#include <format>
-#include <functional>
 #include <iomanip>
 #include <iostream>
-#include <iterator>
 #include <random>
-#include <string>
-#include <type_traits>
 #include <vector>
 
 namespace Neptune {
@@ -30,27 +23,23 @@ private:
     
 public:
     Matrix(Index rows = 0, Index cols = 0, float f = 0.0f) : rows_{ rows }, cols_{ cols }, elements_{ Vector(rows*cols, f) } {}
-    Matrix(Index rows, Index cols, Vector elements) : rows_{ rows }, cols_{ cols }, elements_{ elements }
-    {
+    Matrix(Index rows, Index cols, Vector elements) : rows_{ rows }, cols_{ cols }, elements_{ elements } {
         assert(rows*cols == std::size(elements));
     }
 
-    float& operator() (Index row, Index col)
-    {
+    float& operator() (Index row, Index col) {
         assert(row*cols_ + col < rows_*cols_);
         assert(row >= 0);
         assert(col >= 0);
         return elements_.at(row*cols_ + col);
     }
 
-    float& operator[] (Index index)
-    {
+    float& operator[] (Index index) {
         assert(index >= 0 && index < std::size(elements_));
         return elements_.at(index);
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
-    {
+    friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix) {
         assert(0 < std::size(matrix.elements_));
         out << std::fixed;
         out << std::setprecision(4);
@@ -125,19 +114,16 @@ public:
         return negativeMat;
     }
 
-    void alloc(Vector elements)
-    {
+    void alloc(Vector elements) {
         assert(rows_*cols_ == std::size(elements));
         elements_ = elements;
     }
 
-    auto capacity()
-    {
+    auto capacity() {
         return elements_.capacity();
     }
 
-    Matrix dot(Matrix m)
-    {
+    Matrix dot(Matrix m) {
         Matrix dst(rows_, m.cols_);
         assert(cols_ == m.rows_);
         Index size{ cols_ };
@@ -155,29 +141,23 @@ public:
         return dst;
     }
 
-    Matrix col(Index c)
-    {
+    Matrix col(Index c) {
         Matrix dst(rows_, 1);
         for (Index i{ 0 }; i < rows_; ++i)
-        {
             dst.elements_.at(i) = elements_.at(c + i*cols_);
-        }
 
         return dst;
     }
 
-    Index getCols()
-    {
+    Index getCols() {
         return cols_;
     }
 
-    Index getRows()
-    {
+    Index getRows() {
         return rows_;
     }
 
-    void rand(float low, float high)
-    {
+    void rand(float low, float high) {
         std::mt19937 mt{ std::random_device{}() };
         std::uniform_real_distribution rand(0.0, 1.0);
 
@@ -185,8 +165,7 @@ public:
             elements_[i] = (rand(mt)*(high-low)+low);
     }
 
-    Matrix row(Index r)
-    {
+    Matrix row(Index r) {
         Matrix dst(1, cols_);
         Index begin_offset{ r*cols_ };
         Index end_offset{ (r+1)*cols_ };
@@ -196,19 +175,16 @@ public:
         return dst;
     }
 
-    void setDimension(Index rows, Index cols)
-    {
+    void setDimension(Index rows, Index cols) {
         rows_ = rows;
         cols_ = cols;
     }
 
-    void sigmoid()
-    {
+    void sigmoid() {
         std::for_each(elements_.begin(), elements_.end(), [](float &f){ f = 1.0f / (1.0f + std::exp(-f)); });
     }
 
-    auto size()
-    {
+    auto size() {
         return elements_.size();
     }
 };

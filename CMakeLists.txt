@@ -24,19 +24,19 @@ target_include_directories(
 enable_testing()
 
 add_executable(
-  matrix_test
+  neptune_test
   test/test.cpp
 )
 target_link_libraries(
-  matrix_test
+  neptune_test
   PRIVATE
   GTest::gtest_main
 )
 
-target_include_directories(matrix_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(neptune_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 include(GoogleTest)
-gtest_discover_tests(matrix_test)
+gtest_discover_tests(neptune_test)
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
@@ -48,7 +48,7 @@ write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
                                  VERSION ${PROJECT_VERSION}
                                  COMPATIBILITY SameMajorVersion)
 if(NOT INCLUDE_INSTALL_DIR)
-  set(INCLUDE_INSTALL_DIR include/matrix)
+  set(INCLUDE_INSTALL_DIR include/neptune)
 endif()
 configure_package_config_file(
   "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"

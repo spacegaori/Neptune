@@ -1,3 +1,5 @@
+// include/neptune/nn.hpp
+
 #ifndef NN_HPP
 #define NN_HPP
 #include "matrix.hpp"
@@ -31,13 +33,11 @@ public:
         }
     }
 
-    Matrix& operator[] (Index index)
-    {
+    Matrix& operator[] (Index index) {
         return activations_[index];
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const NN& nn)
-    {
+    friend std::ostream& operator<<(std::ostream& out, const NN& nn) {
         out << std::fixed;
         out << std::setprecision(4);
         out << "nn\n[";
@@ -63,8 +63,7 @@ public:
         return out;
     }
 
-    float cost(Matrix ti, Matrix to)
-    {
+    float cost(Matrix ti, Matrix to) {
         assert(ti.getRows() == to.getRows());
         assert(to.getCols() == activations_[count_].getCols());
         Index n{ ti.getRows() };
@@ -86,12 +85,10 @@ public:
             }
 
         }
-        return c/n;
-
+        return (c / n);
     }
 
-    void finite_diff(NN& g, float eps, Matrix ti, Matrix to)
-    {
+    void finite_diff(NN& g, float eps, Matrix ti, Matrix to) {
         float saved{};
         float c{ cost(ti, to) };
         for (Index i{ 0 }; i < count_; ++i) {
@@ -115,22 +112,19 @@ public:
         }
     }
 
-    void forward()
-    {
+    void forward() {
         for (Index i{ 0 }; i < count_; ++i) {
-            activations_[i+1] = activations_[i].dot(weights_[i]);
-            activations_[i+1] = activations_[i+1] + biases_[i];
-            activations_[i+1].sigmoid();
+            activations_[i + 1] = activations_[i].dot(weights_[i]);
+            activations_[i + 1] = activations_[i + 1] + biases_[i];
+            activations_[i + 1].sigmoid();
         }
     }
 
-    Index getCount()
-    {
+    Index getCount() {
         return count_;
     }
 
-    void learn(NN& g, float rate)
-    {
+    void learn(NN& g, float rate) {
         for (Index i{ 0 }; i < count_; ++i) {
             for (Index j{ 0 }; j < weights_[i].getRows(); ++j) {
                 for (Index k{ 0 }; k < weights_[i].getCols(); ++k) {
@@ -146,10 +140,8 @@ public:
         }
     }
 
-    void rand(float low, float high)
-    {
-        for (Index i{ 0 }; i < count_; ++i)
-        {
+    void rand(float low = 0.0f, float high = 1.0f) {
+        for (Index i{ 0 }; i < count_; ++i) {
             weights_[i].rand(low, high);
             biases_[i].rand(low, high);
         }
