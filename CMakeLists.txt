@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(googletest)
 project(neptune VERSION 1.0.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 add_library(${PROJECT_NAME} INTERFACE)
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_2c)
 target_include_directories(
     ${PROJECT_NAME}
     INTERFACE

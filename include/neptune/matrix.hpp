@@ -1,5 +1,4 @@
 // include/neptune/matrix.hpp
-
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
@@ -8,184 +7,240 @@
 #include <cstddef>
 #include <iomanip>
 #include <iostream>
+#include <limits>
+#include <mdspan>
+#include <numeric>
+#include <print>
 #include <random>
+#include <ranges>
+#include <sstream>
+#include <utility>
 #include <vector>
 
 namespace Neptune {
 
-using Vector = std::vector<float>;
-using Index = Vector::size_type;
-class Matrix {
-private:
-    Index rows_{};
-    Index cols_{};
-    Vector elements_{};
+template<typename T>
+class Matrix
+{
+    using value_type = T;
+    using container_type = std::pmr::vector<value_type>;
+    using row_index_type = container_type::size_type;
+    using col_index_type = container_type::size_type;
     
+private:
+    container_type  elements_{};
+    row_index_type  rows_{};
+    col_index_type  cols_{};
+
 public:
-    Matrix(Index rows = 0, Index cols = 0, float f = 0.0f) : rows_{ rows }, cols_{ cols }, elements_{ Vector(rows*cols, f) } {}
-    Matrix(Index rows, Index cols, Vector elements) : rows_{ rows }, cols_{ cols }, elements_{ elements } {
-        assert(rows*cols == std::size(elements));
+    using size_type = container_type::size_type;
+    using allocator_type = container_type::allocator_type;
+    using init_list_type = std::initializer_list<value_type>;
+
+    // // Default constructor
+    // constexpr Matrix() noexcept = default;
+    // constexpr explicit Matrix(allocator_type const& a) noexcept
+    //     : elements_( a )
+    // {
+    //     for (auto &e : elements_) {
+    //         std::cout << e << ' ';
+    //     }
+    //     std::cout << '\n';
+    // }
+
+    // Copy constructor
+    constexpr Matrix(Matrix const&) = default;
+    constexpr Matrix(Matrix const& m, allocator_type const& a)
+        : elements_( m.elements_, a )
+        , rows_{ m.rows_ }
+        , cols_{ m.cols_ }
+    {
+        std::cout << "Matrix const& m, allocator_type const& a\n";
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, Matrix const& m)
+        : Matrix{ r, c, m, allocator_type{} }
+    {
+        std::cout << "Matrix(row_index_type r, col_index_type c, Matrix const& m)\n";
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, Matrix const& m, allocator_type const& a)
+        : elements_( m.elements_, a )
+        , rows_{ r }
+        , cols_{ c }
+    {
+        assert(rows_ * cols_ == m.rows_ * m.cols_);
+        std::cout << "Matrix(row_index_type r, col_index_type c, Matrix const& m, allocator_type const& a)\n";
     }
 
-    float& operator() (Index row, Index col) {
-        assert(row*cols_ + col < rows_*cols_);
-        assert(row >= 0);
-        assert(col >= 0);
-        return elements_.at(row*cols_ + col);
+    // Move constructor
+    constexpr Matrix(Matrix&&) noexcept = default;
+    constexpr Matrix(Matrix&& m, allocator_type const& a)
+        : elements_( std::move(m.elements_), a )
+        , rows_{ m.rows_ }
+        , cols_{ m.cols_ }
+    {
+        std::cout << "Matrix(Matrix&& m, allocator_type const& a)\n";
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, Matrix&& m)
+        : Matrix{ r, c, m, allocator_type{} }
+    {
+        std::cout << "Matrix(row_index_type r, col_index_type c, Matrix&& m)\n";
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, Matrix&& m, allocator_type const& a)
+        : elements_( std::move(m.elements_), a )
+        , rows_{ r }
+        , cols_{ c }
+    {
+        assert(rows_ * cols_ == m.rows_ * m.cols_);
+        std::cout << "Matrix(row_index_type r, col_index_type c, Matrix&& m, allocator_type const& a)\n";
     }
 
-    float& operator[] (Index index) {
-        assert(index >= 0 && index < std::size(elements_));
-        return elements_.at(index);
+    constexpr Matrix(row_index_type r, col_index_type c, value_type v = 0)
+        : Matrix{ r, c, v, allocator_type{} }
+    {
+        assert(r > 0);
+        assert(c > 0);
+        std::cout << "Matrix(row_index_type r, col_index_type c, value_type v = 0)\n";
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, value_type v, allocator_type const& a)
+        : elements_(r * c, v, a)
+        , rows_{ r }
+        , cols_{ c }
+    {
+        std::cout << "Matrix(row_index_type r, col_index_type c, value_type v, allocator_type const& a)\n";
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix) {
-        assert(0 < std::size(matrix.elements_));
-        out << std::fixed;
-        out << std::setprecision(4);
+    constexpr Matrix(row_index_type r, col_index_type c, init_list_type il)
+        : Matrix{ r, c, il, allocator_type{} }
+    {
+        assert(r * c == il.size());
+        std::cout << "Matrix(row_index_type r, col_index_type c, init_list_type il)\n";
 
-        Index rows{ matrix.rows_ };
-        Index cols{ matrix.cols_ };
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, init_list_type il, allocator_type const& a)
+        : elements_(il, a)
+        , rows_{ r }
+        , cols_{ c }
+    {
+        std::cout << "Matrix(row_index_type r, col_index_type c, init_list_type il, allocator_type const& a)\n";
+    }
 
-        out << '[';
-        for(Index i{ 0 }; i < rows; ++i)
-        {
-            if (i != 0)
-                out << ' ';
-            out << '[';
+    template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, value_type>
+    Matrix(row_index_type r, col_index_type c, R&& elements)
+        : Matrix{ r, c, elements, allocator_type{} }
+    {
+        std::cout << "Matrix(row_index_type r, col_index_type c, R&& elements)\n";
+    }
+    template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, value_type>
+    Matrix(row_index_type r, col_index_type c, R&& elements, allocator_type const& a)
+        : elements_(r * c, a)
+        , rows_{ r }
+        , cols_{ c }
+    {
+        std::cout << "Matrix(row_index_type r, col_index_type c, R&& elements, allocator_type const& a)\n";
 
-            for(Index j{ 0 }; j < cols; ++j)
-            {
-                out << matrix.elements_.at(i*cols+j);
-                if (j != (cols - 1))
-                    out << ' ';
-            }
-            out << ']';
-            if (i != (rows - 1))
-                out << '\n';
+        std::ranges::copy( std::forward<R>(elements), elements_.begin() );
+    }
+
+    constexpr auto rows() & noexcept -> size_type { return rows_; }
+
+    constexpr auto rows() const& noexcept -> size_type { return rows_; }
+
+    constexpr auto cols() & noexcept -> size_type { return cols_; }
+
+    constexpr auto cols() const& noexcept -> size_type {  return cols_; }
+
+    auto operator[](row_index_type r, col_index_type c) & noexcept -> value_type& {
+        auto v{ std::mdspan{ elements_.data(), rows(), cols() } };
+
+        return v[r, c];
+    }
+
+    auto operator[](row_index_type r, col_index_type c) const& noexcept -> const value_type& {
+        auto v{ std::mdspan{ elements_.data(), rows(), cols() } };
+
+        return v[r, c];
+    }
+
+    auto row(row_index_type r) noexcept -> Matrix {
+        container_type row{};
+        row.reserve(cols());
+
+        for (size_type i{ 0 }; i < cols(); ++i) {
+            row.push_back((*this)[r, i]);
         }
-        out << ']';
-        return out;
-
+        
+        return Matrix{ 1, cols(), row };
+        // return std::submdspan(ms, index, std::full_extent);
     }
 
-    bool operator! () const {
-        return (rows_*cols_ > 0);
+    auto col(col_index_type c) noexcept -> Matrix {
+        container_type col{};
+        col.reserve(rows());
+
+        for (size_type i{ 0 }; i < rows(); ++i) {
+            col.push_back((*this)[i, c]);
+        }
+
+        return Matrix{ rows(), 1, col };
     }
 
-    friend Matrix operator+(const Matrix& m, const Matrix& n) {
-        assert(m.rows_ == n.rows_);
-        assert(m.cols_ == n.cols_);
-        Vector u = m.elements_;
-        Vector v = n.elements_;
-        std::transform(u.cbegin(), u.cend(), v.cbegin(), u.begin(), std::plus<float>());
+    auto dot(Matrix const& m) noexcept -> Matrix {
+        Matrix p{ rows(), m.cols() };
 
-        return Matrix{ m.rows_, m.cols_, u };
-    }
+        auto size{ cols() };
 
-    friend Matrix operator+(const Matrix& m, float value) {
-        Vector v = m.elements_;
-        std::transform(v.cbegin(), v.cend(), v.begin(), [value](float f){ return f + value; });
-
-        return Matrix{ m.rows_, m.cols_, v };
-    }
-
-    friend Matrix operator-(const Matrix& m, const Matrix& n) {
-        assert(m.rows_ == n.rows_);
-        assert(m.cols_ == n.cols_);
-        Vector u = m.elements_;
-        Vector v = n.elements_;
-        std::transform(u.cbegin(), u.cend(), v.cbegin(), u.begin(), std::minus<float>());
-
-        return Matrix{ m.rows_, m.cols_, u };
-    }
-
-    friend Matrix operator-(const Matrix& m, float value) {
-        Vector v = m.elements_;
-        std::transform(v.cbegin(), v.cend(),v.begin(), [value](float f){return f - value;});
-
-        return Matrix{ m.rows_, m.cols_, v };
-    }
-
-    Matrix operator-() const {
-        Matrix negativeMat = *this;
-        std::transform(negativeMat.elements_.cbegin(), negativeMat.elements_.cend(), negativeMat.elements_.begin(), std::negate<float>());
-
-        return negativeMat;
-    }
-
-    void alloc(Vector elements) {
-        assert(rows_*cols_ == std::size(elements));
-        elements_ = elements;
-    }
-
-    auto capacity() {
-        return elements_.capacity();
-    }
-
-    Matrix dot(Matrix m) {
-        Matrix dst(rows_, m.cols_);
-        assert(cols_ == m.rows_);
-        Index size{ cols_ };
-        assert(dst.rows_ == rows_);
-        assert(dst.cols_ == m.cols_);
-
-        for (Index i{ 0 }; i < dst.rows_; ++i) {
-            for (Index j{ 0 }; j < dst.cols_; ++j) {
-                dst.elements_.at(i*dst.cols_+j) = 0.0f;
-                for (Index k{ 0 }; k < size; ++k) {
-                    dst.elements_.at(i*dst.cols_+j) += elements_.at(i*cols_+k) * m.elements_.at(k*m.cols_+j);
+        for (row_index_type i{ 0 }; i < rows(); ++i) {
+            for (col_index_type j{ 0 }; j < m.cols(); ++j) {
+                value_type temp{ 0 };
+                for (size_type k{ 0 }; k < size; ++k) {
+                    temp += (*this)[i, k] * m[k, j];
                 }
+                p[i, j] = temp;
             }
         }
-        return dst;
+                
+        return p;
     }
 
-    Matrix col(Index c) {
-        Matrix dst(rows_, 1);
-        for (Index i{ 0 }; i < rows_; ++i)
-            dst.elements_.at(i) = elements_.at(c + i*cols_);
+    template <typename Char, typename Traits>
+    friend auto operator<<(std::basic_ostream<Char, Traits>& out, Matrix const& m) -> std::basic_ostream<Char, Traits>& 
+    {
+        if (out)
+        {
+            auto oss = std::ostringstream{};
+            oss.imbue(std::locale::classic());
 
-        return dst;
-    }
+            oss << std::fixed;
+            oss << std::setprecision(2);
 
-    Index getCols() {
-        return cols_;
-    }
+            row_index_type r{ m.rows() };
+            col_index_type c{ m.cols() };
 
-    Index getRows() {
-        return rows_;
-    }
+            out << '[';
+            for(size_type i{ 0 }; i < r; ++i)
+            {
+                if (i != 0)
+                    oss << ' ';
+                oss << '[';
 
-    void rand(float low, float high) {
-        std::mt19937 mt{ std::random_device{}() };
-        std::uniform_real_distribution rand(0.0, 1.0);
+                for(size_type j{ 0 }; j < c; ++j)
+                {
+                    oss << m[i, j];
+                    if (j != (c - 1))
+                        oss << ' ';
+                }
+                oss << ']';
+                if (i != (r - 1))
+                    oss << '\n';
+            }
+            oss << ']';
 
-        for (Index i{ 0 }; i < rows_*cols_; ++i)
-            elements_[i] = (rand(mt)*(high-low)+low);
-    }
-
-    Matrix row(Index r) {
-        Matrix dst(1, cols_);
-        Index begin_offset{ r*cols_ };
-        Index end_offset{ (r+1)*cols_ };
-        Vector slice(elements_.begin()+static_cast<long>(begin_offset), elements_.begin()+static_cast<long>(end_offset));
-        dst.alloc(slice);
-
-        return dst;
-    }
-
-    void setDimension(Index rows, Index cols) {
-        rows_ = rows;
-        cols_ = cols;
-    }
-
-    void sigmoid() {
-        std::for_each(elements_.begin(), elements_.end(), [](float &f){ f = 1.0f / (1.0f + std::exp(-f)); });
-    }
-
-    auto size() {
-        return elements_.size();
+            out << std::move(oss).str().c_str();
+            
+        }
+        return out;
     }
 };
 
