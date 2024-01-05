@@ -1,6 +1,6 @@
 # Neptune
 
-Allocator-aware, header-only matrix library.
+Header-only matrix library.
 
 ## Description
 
