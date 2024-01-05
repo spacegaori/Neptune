@@ -1,2 +1,6 @@
 build
 examples/build
+
+# temporary
+examples
+include/neptune/nn.hpp

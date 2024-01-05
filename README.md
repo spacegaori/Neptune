@@ -4,19 +4,22 @@ Allocator-aware, header-only matrix library.
 
 ## Description
 
-My goal is to prepare a robust matrix library that will make use of future C++ standard library features like `mdarray`, `mdspan`, `submdspan`, and `std::linalg`. I have been learning a lot by rebuilding `matrix.hpp` from scratch each time with a better understanding and a clearer direction. Now, I will leave the matrix in its most simple form and focus on creating a test suite.
+My goal is to prepare a robust matrix library that will make use of future C++ standard library features like `mdarray`, `mdspan`, `submdspan`, and `std::linalg`. I have been learning a lot by rebuilding `matrix.hpp` from scratch each time with a better understanding and a clearer direction.
 
-## To-do
+I will leave the matrix in its most simple form and focus on creating an appropriate test suite.
 
-- Create a basic test suite
-- Understand constructor keywordslike `constexpr`, `explicit`, `default`, `noexcept`.
+## Goals
+
+- Create a basic test suite covering all constructors and methods.
+- Understand constructor keywords like `constexpr`, `explicit`, `default`, `noexcept`.
 - Understand PMR (Polymorphic Memory Resources) and AA (Allocator Awareness).
 
-## Executing program
+## Executing test
+
+> ⚠️ **Make sure to use a compiler with the `<mdspan>` header.**
 
 ```
-mkdir build
-cd build
+mkdir build && cd build
 cmake ..
 make
 make test

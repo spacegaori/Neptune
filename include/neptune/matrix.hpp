@@ -37,6 +37,44 @@ public:
     using allocator_type = container_type::allocator_type;
     using init_list_type = std::initializer_list<value_type>;
 
+    constexpr Matrix(row_index_type r, col_index_type c, value_type v = 0)
+        : Matrix{ r, c, v, allocator_type{} }
+    {
+        assert(r > 0);
+        assert(c > 0);
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, value_type v, allocator_type const& a)
+        : elements_(r * c, v, a)
+        , rows_{ r }
+        , cols_{ c }
+    {}
+
+    constexpr Matrix(row_index_type r, col_index_type c, init_list_type il)
+        : Matrix{ r, c, il, allocator_type{} }
+    {
+        assert(r * c == il.size());
+    }
+    constexpr Matrix(row_index_type r, col_index_type c, init_list_type il, allocator_type const& a)
+        : elements_(il, a)
+        , rows_{ r }
+        , cols_{ c }
+    {}
+
+    template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, value_type>
+    Matrix(row_index_type r, col_index_type c, R&& elements)
+        : Matrix{ r, c, elements, allocator_type{} }
+    {}
+    template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, value_type>
+    Matrix(row_index_type r, col_index_type c, R&& elements, allocator_type const& a)
+        : elements_(r * c, a)
+        , rows_{ r }
+        , cols_{ c }
+    {
+        std::ranges::copy( std::forward<R>(elements), elements_.begin() );
+    }
+
     constexpr Matrix(Matrix const&) = default;
     constexpr Matrix(Matrix const& m, allocator_type const& a)
         : elements_( m.elements_, a )
@@ -71,45 +109,7 @@ public:
         , cols_{ c }
     {}
 
-    constexpr Matrix(row_index_type r, col_index_type c, value_type v = 0)
-        : Matrix{ r, c, v, allocator_type{} }
-    {
-        assert(r > 0);
-        assert(c > 0);
-    }
-    constexpr Matrix(row_index_type r, col_index_type c, value_type v, allocator_type const& a)
-        : elements_(r * c, v, a)
-        , rows_{ r }
-        , cols_{ c }
-    {}
-
-    constexpr Matrix(row_index_type r, col_index_type c, init_list_type il)
-        : Matrix{ r, c, il, allocator_type{} }
-    {
-        assert(r * c == il.size());
-    }
-    constexpr Matrix(row_index_type r, col_index_type c, init_list_type il, allocator_type const& a)
-        : elements_(il, a)
-        , rows_{ r }
-        , cols_{ c }
-    {}
-
-    template <std::ranges::input_range R>
-        requires std::convertible_to<std::ranges::range_reference_t<R>, value_type>
-    Matrix(row_index_type r, col_index_type c, R&& elements)
-        : Matrix{ r, c, elements, allocator_type{} }
-    {
-        assert(elements.size() == elements_.size())
-    }
-    template <std::ranges::input_range R>
-        requires std::convertible_to<std::ranges::range_reference_t<R>, value_type>
-    Matrix(row_index_type r, col_index_type c, R&& elements, allocator_type const& a)
-        : elements_(r * c, a)
-        , rows_{ r }
-        , cols_{ c }
-    {
-        std::ranges::copy( std::forward<R>(elements), elements_.begin() );
-    }
+    constexpr auto max_size() const& noexcept -> size_type { return elements_.max_size; }
 
     constexpr auto rows() & noexcept -> size_type { return rows_; }
 
@@ -190,11 +190,11 @@ public:
                 for (size_type j{ 0 }; j < m.cols(); ++j)
                 {
                     oss << m[i, j];
-                    if (j != (c - 1))
+                    if (j != (m.cols() - 1))
                         oss << ' ';
                 }
                 oss << ']';
-                if (i != (r - 1))
+                if (i != (m.rows() - 1))
                     oss << '\n';
             }
             oss << ']';
