@@ -1,6 +1,6 @@
 # Neptune
 
-Header-only matrix library.
+Header-only matrix library built with CMake, tested with GoogleTest.
 
 ## Description
 
