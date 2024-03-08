@@ -1,6 +1,5 @@
 // include/neptune/matrix.hpp
-#ifndef MATRIX_HPP
-#define MATRIX_HPP
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -22,6 +21,7 @@ class Matrix
 {
     using value_type        = T;
     using container_type    = std::pmr::vector<value_type>;
+    using index_type        = container_type::size_type;
     using row_index_type    = container_type::size_type;
     using col_index_type    = container_type::size_type;
     
@@ -30,8 +30,15 @@ private:
     row_index_type rows_{};
     col_index_type cols_{};
 
+    auto operator[](index_type i) & noexcept      -> value_type& {
+        return elements_[i];
+    }
+
+    auto operator[](index_type i) const& noexcept -> const value_type& {
+        return elements_[i];
+    }
+
 public:
-    using index_type        = container_type::size_type;
     using allocator_type    = container_type::allocator_type;
     using init_list_type    = std::initializer_list<value_type>;
 
@@ -39,7 +46,6 @@ public:
     using const_iterator    = container_type::const_iterator;
 
     constexpr Matrix() noexcept = delete;
-
     constexpr Matrix(Matrix const&) = default;
     constexpr Matrix(Matrix const& m, allocator_type const& a)
         : elements_( m.elements_, a )
@@ -166,6 +172,96 @@ public:
         return view()[r, c];
     }
 
+    auto operator+=(value_type v) & noexcept   -> Matrix& {
+        for (auto& e : (*this)) {
+            e += v;
+        }
+
+        return (*this);
+    }
+    auto operator+(value_type v) & noexcept   -> Matrix& {
+        return (*this) += v;
+    }
+    auto operator+=(Matrix const& m) & noexcept   -> Matrix& {
+        index_type i{ 0 };
+        for (auto& e : (*this)) {
+            e += m[i];
+            ++i;
+        }
+
+        return (*this);
+    }
+    auto operator+(Matrix const& m) & noexcept   -> Matrix& {
+        return (*this) += m;
+    }
+    auto operator-=(value_type v) & noexcept   -> Matrix& {
+        for (auto& e : (*this)) {
+            e -= v;
+        }
+
+        return (*this);
+    }
+    auto operator-(value_type v) & noexcept   -> Matrix& {
+        return (*this) -= v;
+    }
+    auto operator-=(Matrix const& m) & noexcept   -> Matrix& {
+        index_type i{ 0 };
+        for (auto& e : (*this)) {
+            e -= m[i];
+            ++i;
+        }
+
+        return (*this);
+    }
+    auto operator-(Matrix const& m) & noexcept   -> Matrix& {
+        return (*this) -= m;
+    }
+    auto operator*=(value_type v) & noexcept   -> Matrix& {
+        for (auto& e : (*this)) {
+            e *= v;
+        }
+
+        return (*this);
+    }
+    auto operator*(value_type v) & noexcept   -> Matrix& {
+        return (*this) *= v;
+    }
+    auto operator*=(Matrix const& m) & noexcept   -> Matrix& {
+        index_type i{ 0 };
+        for (auto& e : (*this)) {
+            e *= m[i];
+            ++i;
+        }
+
+        return (*this);
+    }
+    auto operator*(Matrix const& m) & noexcept   -> Matrix& {
+        return (*this) *= m;
+    }
+
+    auto operator/=(value_type v) & noexcept   -> Matrix& {
+        for (auto& e : (*this)) {
+            e /= v;
+        }
+
+        return (*this);
+    }
+    auto operator/(value_type v) & noexcept   -> Matrix& {
+        return (*this) /= v;
+    }
+    auto operator/=(Matrix const& m) & noexcept   -> Matrix& {
+        index_type i{ 0 };
+        for (auto& e : (*this)) {
+            e /= m[i];
+            ++i;
+        }
+
+        return (*this);
+    }
+    auto operator/(Matrix const& m) & noexcept   -> Matrix& {
+        return (*this) /= m;
+    }
+
     auto row(row_index_type r) noexcept -> Matrix {
         container_type row{};
         row.reserve(cols());
@@ -242,5 +338,3 @@ public:
 };
 
 }
-
-#endif
